@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  back-end:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    volumes:
+      - ./back-end:/app
+    expose:
+      - "5252" # Rendre accessible pour d'autres conteneurs, mais pas à l'extérieur
+
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    volumes:
+      - ./front-end:/var/www/html
+    container_name: front-end
+    expose:
+      - "9000" # Rendre accessible pour d'autres conteneurs, mais pas à l'extérieur
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    image: proxy-image
+    ports:
+      - "80:80" # Mappe le port 80 du conteneur sur le port 80 de l'hôte
+    depends_on:
+      - back-end
+      - front-end
